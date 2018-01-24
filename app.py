@@ -31,7 +31,6 @@ def index():
 @app.route('/prereg', methods=['POST'])
 def prereg():
     email = None
-    return '<h1>Successful!</h1>'
     if request.method == 'POST':
         email = request.form['email']
         # Check that email does not already exist
