@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_heroku import Heroku
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/pre-registration'
-heroku = Heroku(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/pre-registration'
+# heroku = Heroku(app)
 db = SQLAlchemy(app)
 
 
@@ -20,11 +20,30 @@ class User(db.Model):
     def __repr__(self):
         return '<E-mail %r>' % self.email
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {'name': self.email}
+
 
 # homepage set to index.html
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+# return to home page (index.html)
+@app.route('/returnHome')
+def returnHome():
+    return render_template('index.html')
+
+
+@app.route('/showAllEmails', methods=['GET'])
+# protect this route with a required login
+def showAllEmails():
+    if request.method == 'GET':
+        users = db.session.query(User).all()
+        return jsonify(emails=[user.serialize for user in users])
 
 
 # will save e-mail to database and send to success page
