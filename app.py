@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from flask.ext.heroku import Heroku
+from flask_heroku import Heroku
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/pre-registration'
@@ -28,8 +28,8 @@ def index():
 
 
 # will save e-mail to database and send to success page
-@app.route('/prereg', methods=['POST'])
-def prereg():
+@app.route('/enterEmail', methods=['POST'])
+def enterEmail():
     email = None
     if request.method == 'POST':
         email = request.form['email']
@@ -38,10 +38,9 @@ def prereg():
             reg = User(email)
             db.session.add(reg)
             db.session.commit()
-            return render_template('success.html')
+        return render_template('success.html')
     return render_template('index.html')
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run()
+    app.run(debug=True)
